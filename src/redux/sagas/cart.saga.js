@@ -3,10 +3,11 @@ import axios from "axios";
 
 function* fetchCart(action) {
     try {
+        // axios.defaults.baseURL = "https://localhost:8000"
         // axios call to get all cart items for that user
         const results = yield axios({
             method: 'GET',
-            url: 'api/cart',
+            url: '/api/cart',
             params: {
                 cart: action.payload
             }
