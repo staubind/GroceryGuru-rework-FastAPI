@@ -6,6 +6,7 @@ import axios from 'axios';
 function* search(action) {
     try {
         const results = yield axios.get('/api/search', {params:  {searchTerm: action.payload}})
+        yield print(results.payload)
         yield put({
             type: 'SET_SEARCH_TERM',
             payload: action.payload})
