@@ -47,10 +47,10 @@ async def basic_get():
         r = await client.get(
             'https://api.spoonacular.com/recipes/complexSearch', 
             params={
-                "apiKey": os.environ.get('SPOONACULAR_API_KEY'),
+                "apiKey": SPOONACULAR_API_KEY,
                 "query": "tacos"
             }
         )
     # data = asyncio.run(r)
     # return info
-    return {'data': r.json()}
+    return {'data': r.json()} # json to serialize it upon return
