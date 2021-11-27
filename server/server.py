@@ -54,3 +54,4 @@ async def basic_get():
     # data = asyncio.run(r)
     # return info
     return {'data': r.json()} # json to serialize it upon return
+
