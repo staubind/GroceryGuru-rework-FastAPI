@@ -55,3 +55,6 @@ async def basic_get():
     # return info
     return {'data': r.json()} # json to serialize it upon return
 
+@app.post('/')
+async def create_cart():
+    pass
