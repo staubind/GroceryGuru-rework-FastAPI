@@ -14,6 +14,12 @@ load_dotenv(os.path.dirname(os.getcwd())+'/.env')
 
 SPOONACULAR_API_KEY = os.environ.get('SPOONACULAR_API_KEY')
 
+cache = SQLiteBackend(
+    cache_name='local_cache',
+    expire_after=3600,
+    ignored_params=['apiKey'] # uses cache response even if the token differs
+)
+
 app = FastAPI()
 
 origins = [
@@ -58,17 +64,21 @@ async def basic_get():
     return {'data': r.json()} # json to serialize it upon return
 
 
-async def get_api(session, url):
-    async with session.get(url + f'?apiKey={SPOONACULAR_API_KEY}&query=tacos') as response:
+async def get_api(session, url, params):
+    #async with session.get(url + f'?apiKey={SPOONACULAR_API_KEY}&query=tacos') as response:
+    #    return await response.text()
+    async with session.get(url, params=params) as response:
         return await response.text()
 
 @app.get('/aihttp-version')
 async def basic_get():
     # make api call
-    async with CachedSession(cache=SQLiteBackend('demo_cache')) as session:
+    async with CachedSession(cache=cache) as session:
         #async with aiohttp.ClientSession() as session:
-        response = await get_api(session, 'https://api.spoonacular.com/recipes/complexSearch')
-        print('did we hit the cache?'   )
+        response = await get_api(
+            session, 
+            'https://api.spoonacular.com/recipes/complexSearch', 
+            {"apiKey": SPOONACULAR_API_KEY, "query": "tacos"})
     return {'data': response} # json to serialize it upon return
 
 @app.post('/')
