@@ -4,6 +4,7 @@ import httpx
 import asyncio
 import requests
 import aiohttp
+from aiohttp_client_cache import CachedSession, SQLiteBackend
 
 from dotenv import load_dotenv
 import os
@@ -64,8 +65,10 @@ async def get_api(session, url):
 @app.get('/aihttp-version')
 async def basic_get():
     # make api call
-    async with aiohttp.ClientSession() as session:
+    async with CachedSession(cache=SQLiteBackend('demo_cache')) as session:
+        #async with aiohttp.ClientSession() as session:
         response = await get_api(session, 'https://api.spoonacular.com/recipes/complexSearch')
+        print('did we hit the cache?'   )
     return {'data': response} # json to serialize it upon return
 
 @app.post('/')
