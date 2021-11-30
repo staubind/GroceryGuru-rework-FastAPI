@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import asyncio
 import requests
+import aiohttp
 
 from dotenv import load_dotenv
 import os
@@ -54,6 +55,18 @@ async def basic_get():
     # data = asyncio.run(r)
     # return info
     return {'data': r.json()} # json to serialize it upon return
+
+
+async def get_api(session, url):
+    async with session.get(url + f'?apiKey={SPOONACULAR_API_KEY}&query=tacos') as response:
+        return await response.text()
+
+@app.get('/aihttp-version')
+async def basic_get():
+    # make api call
+    async with aiohttp.ClientSession() as session:
+        response = await get_api(session, 'https://api.spoonacular.com/recipes/complexSearch')
+    return {'data': response} # json to serialize it upon return
 
 @app.post('/')
 async def create_cart():
