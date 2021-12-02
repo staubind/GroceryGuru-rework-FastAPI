@@ -9,6 +9,12 @@ from aiohttp_client_cache import CachedSession, SQLiteBackend
 from dotenv import load_dotenv
 import os
 
+# db stuff
+from db import Base
+Base.metadata.create_all(bind=engine)
+
+# end db stuff
+
 # get environment variables
 load_dotenv(os.path.dirname(os.getcwd())+'/.env')
 
@@ -21,6 +27,7 @@ cache = SQLiteBackend(
 )
 
 app = FastAPI()
+
 
 origins = [
     "http://localhost:3000"
