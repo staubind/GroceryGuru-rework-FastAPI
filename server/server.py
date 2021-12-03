@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 import os
 
 # db stuff
-from db import Base
-Base.metadata.create_all(bind=engine)
+# from db import Base
+# Base.metadata.create_all(bind=engine)
 
 # end db stuff
 
@@ -75,7 +75,7 @@ async def get_api(session, url, params):
     #async with session.get(url + f'?apiKey={SPOONACULAR_API_KEY}&query=tacos') as response:
     #    return await response.text()
     async with session.get(url, params=params) as response:
-        return await response.text()
+        return await response.json() # returns dictionary of the results.
 
 @app.get('/aihttp-version')
 async def basic_get():
@@ -86,6 +86,7 @@ async def basic_get():
             session, 
             'https://api.spoonacular.com/recipes/complexSearch', 
             {"apiKey": SPOONACULAR_API_KEY, "query": "tacos"})
+        # print(response.get('results')[0])
     return {'data': response} # json to serialize it upon return
 
 @app.post('/')
