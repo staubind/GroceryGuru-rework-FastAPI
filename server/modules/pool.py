@@ -7,11 +7,14 @@ from sqlalchemy.orm import relationship
 
 from typing import List, Optional
 from pydantic import BaseModel
+import os
+from dotenv import load_dotenv
 
+load_dotenv(os.path.dirname(os.path.dirname(os.getcwd()))+'/.env')
 
 
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@pg_server_name/database_name"
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://dan:password@localhost:5432/prime_app"
+SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL')
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
@@ -58,6 +61,6 @@ def get_db():
 
 with SessionLocal() as db:
     try:
-        create_user(db, User(username='marko5', password='123abc'))
+        create_user(db, User(username='marko6', password='123abc'))
     finally:
         db.close()
