@@ -27,6 +27,7 @@ cache = SQLiteBackend(
 
 app = FastAPI()
 
+app.include_router(recipe_router.router)
 
 origins = [
     "http://localhost:3000"

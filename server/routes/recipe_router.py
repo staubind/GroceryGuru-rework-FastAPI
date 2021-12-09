@@ -3,10 +3,15 @@ from dotenv import load_dotenv
 import os
 import httpx
 import asyncio
-router = APIRouter()
+
+router = APIRouter(
+    prefix='/recipes',
+    tags=['recipes'],
+    responses={404: {"description": "Not Found"}}
+)
 
 
-load_dotenv(os.path.dirname(os.path.dirname(os.getcwd()))+'/.env')
+load_dotenv(os.path.dirname(os.getcwd())+'/.env')
 
 SPOONACULAR_API_KEY = os.environ.get('SPOONACULAR_API_KEY')
 
@@ -16,6 +21,7 @@ SPOONACULAR_API_KEY = os.environ.get('SPOONACULAR_API_KEY')
 async def basic_get():
     # make api call
     async with httpx.AsyncClient() as client:
+        print(SPOONACULAR_API_KEY)
         r = await client.get(
             'https://api.spoonacular.com/recipes/complexSearch', 
             params={
