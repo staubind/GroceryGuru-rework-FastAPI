@@ -79,7 +79,8 @@ async def get_api(session, url, params):
 
 @app.get('/aihttp-version')
 async def basic_get():
-    # make api call
+    # make api call - couldn't we just open the session in a dependency? like with get_db?
+    # that way we don't have to write this code more than once
     async with CachedSession(cache=cache) as session:
         #async with aiohttp.ClientSession() as session:
         response = await get_api(
