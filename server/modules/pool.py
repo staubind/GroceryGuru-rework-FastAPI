@@ -14,7 +14,7 @@ load_dotenv(os.path.dirname(os.path.dirname(os.getcwd()))+'/.env')
 
 
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@pg_server_name/database_name"
-SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL')
+SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql+psycopg2://dan:password@localhost:5432/prime_app"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
@@ -52,6 +52,7 @@ def create_user(db: Session, user: UserCreate):
 
 Base.metadata.create_all(bind=engine)
 
+# a dependency for routes
 def get_db():
     db = SessionLocal()
     try:
@@ -59,8 +60,10 @@ def get_db():
     finally:
         db.close()
 
+# purely for testing
 with SessionLocal() as db:
     try:
-        create_user(db, User(username='marko6', password='123abc'))
+        # create_user(db, User(username='marko6', password='123abc'))
+        new_user = get_user(db, 7)
     finally:
         db.close()
