@@ -72,7 +72,20 @@ async def basic_get(search: str):
 #         'boolean': q
 #     }
 
-from modules.models.recipe_model import Recipe
+from modules.models.request.recipe_model import Recipe
+# still need to figure out how to collect the user id for posting.
+# and need to connect to db and post it.
 @router.post('/recipes/')
 async def create_cart(recipe: Recipe):
-    return recipe.dict()
+    # clean the recipe dictionary.
+    recipe_dict = recipe.dict()
+    for key in recipe.dict().keys():
+        if recipe_dict[key] == None:
+            del recipe_dict[key]
+    # post that dictionary to the database
+    # then send a success/fail response depending on the response from the db
+    return recipe_dict
+
+# to respond with a model:
+#@router.post('/stuff/', response_model=ModelName)
+# this limits the output to data of that model
