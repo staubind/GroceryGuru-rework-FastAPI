@@ -83,6 +83,8 @@ async def create_cart(recipe: Recipe):
         if recipe_dict[key] == None:
             del recipe_dict[key]
     # post that dictionary to the database
+    # do it using sql alchemy, but make yourself actually write sql queries, 
+    # do not use the ORM here.
     # then send a success/fail response depending on the response from the db
     return recipe_dict
 

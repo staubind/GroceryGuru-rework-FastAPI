@@ -63,7 +63,7 @@ def get_db():
 # purely for testing
 with SessionLocal() as db:
     try:
-        # create_user(db, User(username='marko6', password='123abc'))
+        create_user(db, User(username='marko6', password='123abc'))
         new_user = get_user(db, 7)
     finally:
         db.close()
