@@ -1,7 +1,9 @@
 from typing import Optional
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from dotenv import load_dotenv
 import os
+import sqlalchemy
+from sqlalchemy.orm import Session
 from typing import Optional
 from aiohttp_client_cache import CachedSession, SQLiteBackend
 
@@ -77,15 +79,22 @@ from modules.dependencies.db_session import get_db
 # still need to figure out how to collect the user id for posting.ß
 # and need to connect to db and post it.
 @router.post('/recipes/')
-async def create_cart(recipe: Recipe):
-    # clean the recipe dictionary.
+async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
+    # clean the recipe dictionary - I feel like this may actually cause a KeyError...
     recipe_dict = recipe.dict()
     for key in recipe.dict().keys():
         if recipe_dict[key] == None:
             del recipe_dict[key]
     # post that dictionary to the database
-    # do it using sql alchemy, but make yourself actually write sql queries, 
+    # using the ORM
+
     # do not use the ORM here.
+    recipe_dict['user_id'] = 1
+    query = sqlalchemy.text('INSERT INTO user_recipes (user_id, recipe_id, is_favorite, is_current, servings) VALUES (:user_id, :recipe_id, :is_favorite, :is_current, :servings)')
+    result = db.execute(query, recipe_dict) 
+    # this seems to work - or it doesn't throw errors, but it doesn't actually affect the db
+    # setting autocommit to True in pool.py lets it work!
+
     # then send a success/fail response depending on the response from the db
     return recipe_dict
 
