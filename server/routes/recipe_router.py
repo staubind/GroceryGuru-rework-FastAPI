@@ -73,7 +73,8 @@ async def basic_get(search: str):
 #     }
 
 from modules.models.request.recipe_model import Recipe
-# still need to figure out how to collect the user id for posting.
+from modules.dependencies.db_session import get_db
+# still need to figure out how to collect the user id for posting.ß
 # and need to connect to db and post it.
 @router.post('/recipes/')
 async def create_cart(recipe: Recipe):
@@ -91,3 +92,16 @@ async def create_cart(recipe: Recipe):
 # to respond with a model:
 #@router.post('/stuff/', response_model=ModelName)
 # this limits the output to data of that model
+
+# purely for testing
+# from modules.pool import SessionLocal
+# from modules.schemas.user_schemas import create_user, User, get_user
+# #### END TESTING
+
+# with SessionLocal() as db:
+#     try:
+#         create_user(db, User(username='marko20220', password='123abc'))
+#         new_user = get_user(db, 7)
+#         print(new_user)
+#     finally:
+#         db.close()
