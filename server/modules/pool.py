@@ -16,9 +16,7 @@ load_dotenv(os.path.dirname(os.path.dirname(os.getcwd()))+'/.env')
 
 SQLALCHEMY_DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql+psycopg2://dan:password@localhost:5432/prime_app"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

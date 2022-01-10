@@ -4,10 +4,11 @@ from pydantic import BaseModel
 
 # maybe appropriate for posting a model, but not for GET routes.
 class Recipe(BaseModel):
-    spoonacular_id: int
-    in_cart: Optional[bool] = None
+    recipe_id: int
+    is_current: Optional[bool] = None
     # can use Field from Pydantic to do additional validation for each of these fields.
-    in_favorites: Optional[bool] = None
+    is_favorite: Optional[bool] = None
+    servings: Optional[int] = 1
 
     # can also add example for the docs
     # class Config:
