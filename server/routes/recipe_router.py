@@ -92,6 +92,7 @@ async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
     recipe_dict['user_id'] = 1
     query = sqlalchemy.text('INSERT INTO user_recipes (user_id, recipe_id, is_favorite, is_current, servings) VALUES (:user_id, :recipe_id, :is_favorite, :is_current, :servings)')
     result = db.execute(query, recipe_dict) 
+    db.commit()
     # this seems to work - or it doesn't throw errors, but it doesn't actually affect the db
     # setting autocommit to True in pool.py lets it work!
 
