@@ -6,6 +6,7 @@ import sqlalchemy
 from sqlalchemy.orm import Session
 from typing import Optional
 from aiohttp_client_cache import CachedSession, SQLiteBackend
+from modules.dependencies.request_session import get_req_session
 
 router = APIRouter(
     prefix='/recipes',
@@ -13,11 +14,11 @@ router = APIRouter(
     responses={404: {"description": "Not Found"}}
 )
 
-cache = SQLiteBackend(
-    cache_name='local_cache',
-    expire_after=3600,
-    ignored_params=['apiKey'] # uses cache response even if the token differs
-)
+# cache = SQLiteBackend(
+#     cache_name='local_cache',
+#     expire_after=3600,
+#     ignored_params=['apiKey'] # uses cache response even if the token differs
+# )
 
 load_dotenv(os.path.dirname(os.getcwd())+'/.env')
 
@@ -49,12 +50,12 @@ async def get_api(session, url, params):
 
 # aihttp-version
 @router.get('/{search}')
-async def basic_get(search: str):
-    # make api call - couldn't we just open the session in a dependency? like with get_db?
+async def basic_get(search: str, session: CachedSession = Depends(get_req_session)):
+    # make api call - couldn't we just open the session in a dependency? like with get_db? - but what about if it's asynchronous?
     # that way we don't have to write this code more than once
-    async with CachedSession(cache=cache) as session:
+    # async with CachedSession(cache=cache) as session:
         #async with aiohttp.ClientSession() as session:
-        response = await get_api(
+    response = await get_api(
             session, 
             'https://api.spoonacular.com/recipes/complexSearch', 
             {"apiKey": SPOONACULAR_API_KEY, "query": search})
@@ -89,6 +90,7 @@ async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
     # using the ORM
 
     # do not use the ORM here.
+    # need to change this to retrieve the user from the jwt at some point.
     recipe_dict['user_id'] = 1
     query = sqlalchemy.text('INSERT INTO user_recipes (user_id, recipe_id, is_favorite, is_current, servings) VALUES (:user_id, :recipe_id, :is_favorite, :is_current, :servings)')
     result = db.execute(query, recipe_dict) 
