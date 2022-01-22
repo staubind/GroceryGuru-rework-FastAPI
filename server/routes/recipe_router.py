@@ -6,6 +6,7 @@ import sqlalchemy
 from sqlalchemy.orm import Session
 from typing import Optional
 from aiohttp_client_cache import CachedSession, SQLiteBackend
+from sqlalchemy.sql.functions import user
 from modules.dependencies.request_session import get_req_session
 
 router = APIRouter(
@@ -49,7 +50,8 @@ async def get_api(session, url, params):
         return await response.json() # returns dictionary of the results.
 
 # aihttp-version
-@router.get('/{search}')
+# search route.
+@router.get('/search/{search}')
 async def basic_get(search: str, session: CachedSession = Depends(get_req_session)):
     # make api call - couldn't we just open the session in a dependency? like with get_db? - but what about if it's asynchronous?
     # that way we don't have to write this code more than once
@@ -79,7 +81,7 @@ from modules.models.request.recipe_model import Recipe
 from modules.dependencies.db_session import get_db
 # still need to figure out how to collect the user id for posting.ß
 # and need to connect to db and post it.
-@router.post('/recipes/')
+@router.post('/')
 async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
     # clean the recipe dictionary - I feel like this may actually cause a KeyError...
     recipe_dict = recipe.dict()
@@ -91,13 +93,12 @@ async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
 
     # do not use the ORM here.
     # need to change this to retrieve the user from the jwt at some point.
+    # also should wrap it in a try block maybe
+    # and add ability to rollback changes before we commit if there's an error.
     recipe_dict['user_id'] = 1
     query = sqlalchemy.text('INSERT INTO user_recipes (user_id, recipe_id, is_favorite, is_current, servings) VALUES (:user_id, :recipe_id, :is_favorite, :is_current, :servings)')
     result = db.execute(query, recipe_dict) 
     db.commit()
-    # this seems to work - or it doesn't throw errors, but it doesn't actually affect the db
-    # setting autocommit to True in pool.py lets it work!
-
     # then send a success/fail response depending on the response from the db
     return recipe_dict
 
@@ -105,15 +106,25 @@ async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
 #@router.post('/stuff/', response_model=ModelName)
 # this limits the output to data of that model
 
-# purely for testing
-# from modules.pool import SessionLocal
-# from modules.schemas.user_schemas import create_user, User, get_user
-# #### END TESTING
-
-# with SessionLocal() as db:
-#     try:
-#         create_user(db, User(username='marko20220', password='123abc'))
-#         new_user = get_user(db, 7)
-#         print(new_user)
-#     finally:
-#         db.close()
+# needs to take in a user, for now we'll assume they've got that.
+@router.get('/all')
+async def get_cart(
+    db: Session = Depends(get_db), 
+    api_session: CachedSession = Depends(get_req_session)):
+    # should put all db operations in a try except block, and probably the api call, too
+    # get all of the recipes from teh db that user has in the cart
+    # doesn't this need to be async, otherwise it'll be blocking?
+    user_id = 1
+    recipe_query = sqlalchemy.text(
+        '''SELECT * FROM user_recipes 
+        JOIN is_completed
+        ON user_recipes.recipe_id = is_completed.user_recipe_id
+        WHERE user_id = :user_id
+        '''
+    ) # could probably do a join on the ingredients column here to avoid doing a db call for the ingredients.
+    recipes = db.execute(recipe_query, {'user_id': user_id})
+    print(recipes.all()) # returns a list of tupples containing values of the columns
+    # also get whether or not they've got the ingredient in their cart
+    # reach out to 3rd party api to provide the image data, etc for the cards
+    #
+    return {'hi':'bye'}
