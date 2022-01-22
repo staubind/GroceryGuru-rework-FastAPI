@@ -98,6 +98,8 @@ async def create_cart(recipe: Recipe, db: Session = Depends(get_db)):
     recipe_dict['user_id'] = 1
     query = sqlalchemy.text('INSERT INTO user_recipes (user_id, recipe_id, is_favorite, is_current, servings) VALUES (:user_id, :recipe_id, :is_favorite, :is_current, :servings)')
     result = db.execute(query, recipe_dict) 
+    # also needs to post the ingredients to the db
+    # no, not initially. it has to post the recipe, on first look up no ingredients will be found and we will use that fact to populate the value for the client.
     db.commit()
     # then send a success/fail response depending on the response from the db
     return recipe_dict
@@ -116,11 +118,11 @@ async def get_cart(
     # doesn't this need to be async, otherwise it'll be blocking?
     user_id = 1
     recipe_query = sqlalchemy.text(
-        '''SELECT * FROM user_recipes 
-        JOIN is_completed
-        ON user_recipes.recipe_id = is_completed.user_recipe_id
+        '''SELECT * FROM recipes 
+        JOIN ingredients
+        ON recipes.id = ingredients.recipes_id
         WHERE user_id = :user_id
-        '''
+        ''' # have it return it where all of the ingredients are in a list or something
     ) # could probably do a join on the ingredients column here to avoid doing a db call for the ingredients.
     recipes = db.execute(recipe_query, {'user_id': user_id})
     print(recipes.all()) # returns a list of tupples containing values of the columns
