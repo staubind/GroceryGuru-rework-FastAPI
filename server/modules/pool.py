@@ -1,12 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.orm.session import _SessionClassMethods
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
-
-from typing import List, Optional
-from pydantic import BaseModel
+from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
