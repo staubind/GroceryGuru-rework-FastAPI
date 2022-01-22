@@ -5,11 +5,6 @@ from routes import recipe_router
 from dotenv import load_dotenv
 import os
 
-
-
-
-
-
 # db stuff
 # from db import Base
 # Base.metadata.create_all(bind=engine)
@@ -20,8 +15,6 @@ import os
 load_dotenv(os.path.dirname(os.getcwd())+'/.env')
 
 SPOONACULAR_API_KEY = os.environ.get('SPOONACULAR_API_KEY')
-
-
 
 app = FastAPI()
 
