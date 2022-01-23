@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
 from routes import recipe_router
 from dotenv import load_dotenv
 import os
